@@ -58,6 +58,121 @@ public class EmailService {
 
 
     /**
+     * Send recommended jobs email using preformatted job list text.
+     */
+    public void sendRecommendedJobsEmail(String toEmail, String jobsText) {
+
+        try {
+
+            if (jobsText == null || jobsText.isBlank()) {
+                jobsText = "No suitable jobs found at the moment.";
+            }
+
+            String[] lines = jobsText.split("\\r?\\n");
+            int jobCount = 0;
+            StringBuilder jobsHtml = new StringBuilder();
+
+            for (String line : lines) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) {
+                    continue;
+                }
+                jobCount++;
+                jobsHtml.append("<div class=\"job\"><p>")
+                        .append(trimmed)
+                        .append("</p></div>");
+            }
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(toEmail);
+            helper.setSubject("AI Matcher – Your Personalized Job Matches");
+            helper.setFrom("noreply@aimatcher.com");
+
+            String html = """
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body{
+font-family:Arial;
+background:#f6f8fc;
+padding:40px;
+}
+.container{
+max-width:600px;
+margin:auto;
+background:white;
+border-radius:20px;
+overflow:hidden;
+box-shadow:0 20px 40px rgba(0,0,0,0.1);
+}
+.header{
+background:linear-gradient(135deg,#2563eb,#10b981);
+color:white;
+padding:30px;
+text-align:center;
+}
+.content{
+padding:30px;
+}
+.job{
+border:1px solid #eee;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
+.footer{
+padding:20px;
+background:#fafafa;
+text-align:center;
+font-size:12px;
+color:#777;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h2>AI MATCHER</h2>
+</div>
+<div class="content">
+<h3>Hello there</h3>
+<p>Our AI found <strong>%d job matches</strong> for you.</p>
+%s
+<p style="margin-top:20px">
+<a href="http://localhost:5173/jobs">View All Matches</a>
+</p>
+</div>
+<div class="footer">
+© %d AI Matcher
+</div>
+</div>
+</body>
+</html>
+""".formatted(
+                    jobCount,
+                    jobsHtml.toString(),
+                    java.time.Year.now().getValue()
+            );
+
+            helper.setText(html, true);
+            mailSender.send(message);
+
+            log.info("Job recommendation email sent to {}", toEmail);
+
+        } catch (Exception e) {
+
+            log.error("Email sending failed {}", e.getMessage());
+            throw new RuntimeException("Email sending failed", e);
+
+        }
+    }
+
+
+    /**
      * Build email HTML
      */
     private String generateEmail(String candidateName, List<Map<String, Object>> jobs) {
