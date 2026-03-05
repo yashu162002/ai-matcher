@@ -606,42 +606,39 @@ public class EmailService {
             helper.setTo(toEmail);
             helper.setSubject("🎯 AI Matcher – Interview Invitation");
 
-            String html = """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body { font-family: 'Inter', Arial, sans-serif; background: #f6f8fc; padding: 40px 20px; }
-                    .container { max-width: 550px; margin: 0 auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); }
-                    .header { background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 30px; text-align: center; color: white; }
-                    .content { padding: 40px; }
-                    .date-box { background: #f9fafb; border-radius: 16px; padding: 24px; text-align: center; margin: 24px 0; border: 1px solid #f3f4f6; }
-                    .date { font-size: 20px; font-weight: 700; color: #111827; }
-                    .button { display: inline-block; background: #111827; color: white; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-top: 24px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h2 style="font-weight:300; font-size:28px;">Interview <strong style="font-weight:800; font-style:italic;">INVITATION</strong></h2>
-                    </div>
-                    <div class="content">
-                        <h3 style="font-size:24px; font-weight:300;">Hello, %s</h3>
-                        <p style="color:#4b5563; line-height:1.6;">Congratulations! You've been selected for an interview for the position of <strong>%s</strong>.</p>
-                        
-                        <div class="date-box">
-                            <p style="color:#6b7280; margin-bottom:12px;">SCHEDULED FOR</p>
-                            <div class="date">%s</div>
-                        </div>
-                        
-                        <div style="text-align:center;">
-                            <a href="%s" class="button">JOIN INTERVIEW →</a>
-                        </div>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.formatted(candidateName, jobTitle, interviewDate, interviewLink);
+            String html =
+                    "<!DOCTYPE html>" +
+                    "<html>" +
+                    "<head>" +
+                    "    <style>" +
+                    "        body { font-family: 'Inter', Arial, sans-serif; background: #f6f8fc; padding: 40px 20px; }" +
+                    "        .container { max-width: 550px; margin: 0 auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); }" +
+                    "        .header { background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 30px; text-align: center; color: white; }" +
+                    "        .content { padding: 40px; }" +
+                    "        .date-box { background: #f9fafb; border-radius: 16px; padding: 24px; text-align: center; margin: 24px 0; border: 1px solid #f3f4f6; }" +
+                    "        .date { font-size: 20px; font-weight: 700; color: #111827; }" +
+                    "        .button { display: inline-block; background: #111827; color: white; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-top: 24px; }" +
+                    "    </style>" +
+                    "</head>" +
+                    "<body>" +
+                    "    <div class=\"container\">" +
+                    "        <div class=\"header\">" +
+                    "            <h2 style=\"font-weight:300; font-size:28px;\">Interview <strong style=\"font-weight:800; font-style:italic;\">INVITATION</strong></h2>" +
+                    "        </div>" +
+                    "        <div class=\"content\">" +
+                    "            <h3 style=\"font-size:24px; font-weight:300;\">Hello, " + candidateName + "</h3>" +
+                    "            <p style=\"color:#4b5563; line-height:1.6;\">Congratulations! You've been selected for an interview for the position of <strong>" + jobTitle + "</strong>.</p>" +
+                    "            <div class=\"date-box\">" +
+                    "                <p style=\"color:#6b7280; margin-bottom:12px;\">SCHEDULED FOR</p>" +
+                    "                <div class=\"date\">" + interviewDate + "</div>" +
+                    "            </div>" +
+                    "            <div style=\"text-align:center;\">" +
+                    "                <a href=\"" + interviewLink + "\" class=\"button\">JOIN INTERVIEW →</a>" +
+                    "            </div>" +
+                    "        </div>" +
+                    "    </div>" +
+                    "</body>" +
+                    "</html>";
 
             helper.setText(html, true);
             mailSender.send(message);
