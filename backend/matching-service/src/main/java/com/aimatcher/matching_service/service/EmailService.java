@@ -584,13 +584,13 @@ public class EmailService {
                 </div>
                 <div class="content">
                     <div class="message">
-                        """ + message + """
+                        %s
                     </div>
                 </div>
             </div>
         </body>
         </html>
-        """;
+        """.formatted(message);
     }
 
     /**
@@ -626,22 +626,22 @@ public class EmailService {
                         <h2 style="font-weight:300; font-size:28px;">Interview <strong style="font-weight:800; font-style:italic;">INVITATION</strong></h2>
                     </div>
                     <div class="content">
-                        <h3 style="font-size:24px; font-weight:300;">Hello, """ + candidateName + """</h3>
-                        <p style="color:#4b5563; line-height:1.6;">Congratulations! You've been selected for an interview for the position of <strong>""" + jobTitle + """</strong>.</p>
+                        <h3 style="font-size:24px; font-weight:300;">Hello, %s</h3>
+                        <p style="color:#4b5563; line-height:1.6;">Congratulations! You've been selected for an interview for the position of <strong>%s</strong>.</p>
                         
                         <div class="date-box">
                             <p style="color:#6b7280; margin-bottom:12px;">SCHEDULED FOR</p>
-                            <div class="date">""" + interviewDate + """</div>
+                            <div class="date">%s</div>
                         </div>
                         
                         <div style="text-align:center;">
-                            <a href="""" + interviewLink + """" class="button">JOIN INTERVIEW →</a>
+                            <a href="%s" class="button">JOIN INTERVIEW →</a>
                         </div>
                     </div>
                 </div>
             </body>
             </html>
-            """;
+            """.formatted(candidateName, jobTitle, interviewDate, interviewLink);
 
             helper.setText(html, true);
             mailSender.send(message);
