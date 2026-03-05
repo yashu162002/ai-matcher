@@ -8,9 +8,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +17,6 @@ import java.util.Map;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
 
     /**
      * Send recommended jobs email
@@ -41,15 +37,10 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo(toEmail);
-            helper.setFrom("noreply@aimatcher.com", "AI Matcher");
             helper.setSubject("AI Matcher – Your Personalized Job Matches");
+            helper.setFrom("noreply@aimatcher.com");
 
-            Context context = new Context();
-            context.setVariable("candidateName", candidateName == null ? "there" : candidateName);
-            context.setVariable("jobs", jobs);
-            context.setVariable("currentYear", java.time.Year.now().getValue());
-
-            String htmlContent = generateNikeStyleEmail(context);
+            String htmlContent = generateEmail(candidateName, jobs);
 
             helper.setText(htmlContent, true);
 
@@ -65,17 +56,37 @@ public class EmailService {
         }
     }
 
+
     /**
-     * Generate email template
+     * Build email HTML
      */
-    private String generateNikeStyleEmail(Context context) {
+    private String generateEmail(String candidateName, List<Map<String, Object>> jobs) {
+
+        StringBuilder jobsHtml = new StringBuilder();
+
+        for (Map<String, Object> job : jobs) {
+
+            String title = String.valueOf(job.getOrDefault("title", "Job Role"));
+            String company = String.valueOf(job.getOrDefault("company", "Company"));
+            String score = String.valueOf(job.getOrDefault("score", "90"));
+            String description = String.valueOf(job.getOrDefault("description", ""));
+
+            jobsHtml.append("""
+                    <div class="job">
+                        <h3>%s</h3>
+                        <p><b>%s</b></p>
+                        <div class="score">Match Score: %s%%</div>
+                        <p>%s</p>
+                    </div>
+                    """.formatted(title, company, score, description));
+        }
 
         return """
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>AI Matcher</title>
+
 <style>
 
 body{
@@ -117,6 +128,8 @@ color:white;
 padding:5px 10px;
 border-radius:10px;
 font-size:12px;
+display:inline-block;
+margin-top:5px;
 }
 
 .footer{
@@ -128,6 +141,7 @@ color:#777;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -140,15 +154,11 @@ color:#777;
 
 <div class="content">
 
-<h3>Hello [[${candidateName}]]</h3>
+<h3>Hello %s</h3>
 
-<p>Our AI found <strong>[[${jobs.size()}]] job matches</strong> for you.</p>
+<p>Our AI found <strong>%d job matches</strong> for you.</p>
 
-<div>
-
-[[${jobs}]]
-
-</div>
+%s
 
 <p style="margin-top:20px">
 <a href="http://localhost:5173/jobs">View All Matches</a>
@@ -158,7 +168,7 @@ color:#777;
 
 <div class="footer">
 
-© [[${currentYear}]] AI Matcher
+© %d AI Matcher
 
 </div>
 
@@ -166,11 +176,19 @@ color:#777;
 
 </body>
 </html>
-""";
+"""
+.formatted(
+        candidateName == null ? "there" : candidateName,
+        jobs.size(),
+        jobsHtml.toString(),
+        java.time.Year.now().getValue()
+);
+
     }
 
+
     /**
-     * Send bulk notifications
+     * Bulk notification email
      */
     public void sendBulkNotification(
             List<String> recipients,
@@ -183,7 +201,6 @@ color:#777;
             try {
 
                 MimeMessage mimeMessage = mailSender.createMimeMessage();
-
                 MimeMessageHelper helper =
                         new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
@@ -202,6 +219,7 @@ color:#777;
         });
 
     }
+
 
     /**
      * Notification template
@@ -226,8 +244,9 @@ color:#777;
 
     }
 
+
     /**
-     * Interview invitation email
+     * Interview invitation
      */
     public void sendInterviewInvitation(
             String toEmail,
