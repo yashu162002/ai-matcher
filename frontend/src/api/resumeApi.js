@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8082/api/resume";
+const BASE_URL = "https://resume-service-sk9a.onrender.com/api/resume";
 
 export const getAllResumes = () =>
   axios.get(`${BASE_URL}/all`);

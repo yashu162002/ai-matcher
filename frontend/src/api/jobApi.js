@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:8083/api/job";
+const API = "https://job-service-tg8t.onrender.com/api/job";
 
 export const createJob = (job) =>
   axios.post(`${API}/create`, job);

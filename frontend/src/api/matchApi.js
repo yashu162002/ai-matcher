@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:8084/api/match";
+const API = "https://matching-service-7d0r.onrender.com/api/match";
 
 export const getAIMatch = (jobId) =>
   axios.post(`${API}/ai/${jobId}`);
